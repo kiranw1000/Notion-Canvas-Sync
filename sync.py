@@ -12,13 +12,8 @@ canvas = Canvas(API_URL,API_KEY)
 kiran = canvas.get_current_user()
 courses = []
 db_id = "57c6c1fdb5b54861af2fb7787344b4fc"
-subjects = {
-     'AU22 CSE 2221 - SW 1: Components (35445)':{'id': '8d669188-3c5e-4fea-84e4-2cb3fcf74ca8','name': 'Software Engineering 2221','color': 'yellow'},
-     'AU22 ENGR 1181.01 - Fund Engr 1 (7063)':{'id': '9ff6a39b-c700-4ab7-9d66-29d963f01e8f','name': 'Intro to Engineering','color': 'green'},
-     'AU22 ARTSSCI 1100.01H - ASC College Survey (15218)':{'id': 'e18cd657-84af-4152-a783-be92991ca93b','name': 'Art Sci Survey','color': 'default'},
-     'AU22 PHYSICS 1250H - Mechanics, Spc Rel (20281)':{'id': '6dcb6cd3-3d2c-46d5-a070-f6f8bdb6969c','name': 'Physics 1250H','color': 'purple'},
-     'AU22 MATH 2153 - Calculus 3 (18401)':{'id': '85591cad-2e1b-44f7-b06f-05f45a081c95','name': 'Calc 2153','color': 'red'}}
-enrollment_term_id = '164'
+subjects = {}
+enrollment_term_id = 164
 for course in kiran.get_courses():
     if course.__dict__['enrollment_term_id'] == enrollment_term_id:
         courses.append(course)
