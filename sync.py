@@ -14,7 +14,7 @@ courses = []
 db_id = "57c6c1fdb5b54861af2fb7787344b4fc"
 subjects = {}
 enrollment_term_id = 164
-for course in kiran.get_courses():
+for course in kiran.get_favorite_courses():
     if course.__dict__['enrollment_term_id'] == enrollment_term_id:
         courses.append(course)
 
