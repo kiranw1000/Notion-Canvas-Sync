@@ -53,11 +53,11 @@ def update_course(course:cnv.course.Course,subject_dict:dict):
 def update_all(courses:list,subject_dict:dict):
     backlog = {'id': '1', 'name': 'Backlog', 'color': 'red'}
     week_backlog = {'id': '2', 'name': 'Week Backlog', 'color': 'yellow'} 
-    backloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","select":{"equals":"Backlog"}}})['results']
+    backloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Backlog"}}})['results']
     for page in backloglist:
         date = datetime.fromisoformat(page['properties']['Due Date']['date']['start'])
-        if date.date()-datetime.today().date()<timedelta(days=7):
-            nclient.pages.update(page['id'],**{'properties':{'Status':{'select':week_backlog}}})
+        if date.date()-datetime.today().date()<=timedelta(days=7):
+            nclient.pages.update(page['id'],**{'properties':{'Status':{'status':week_backlog}}})
     for x in courses:
         update_course(x,subject_dict)
 
