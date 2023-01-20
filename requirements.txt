@@ -1,1 +1,3 @@
-canvasapi, notion_client, datetime
+canvasapi
+notion_client
+datetime
