@@ -19,19 +19,17 @@ for course in kiran.get_favorite_courses():
         courses.append(course)
 
 def get_schema(assignment:assignment,subject_dict:dict,course:str):
-    backlog = {'id': '1', 'name': 'Backlog', 'color': 'red'}
-    week_backlog = {'id': '2', 'name': 'Week Backlog', 'color': 'yellow'} 
     status = ""
     if assignment.due_at_date.date()-datetime.today().date()<=timedelta(days=7):
-        status = week_backlog
+        status = str(2)
     else:
-        status = backlog
+        status = str(1)
     if course in subject_dict.keys():
         subject = subject_dict[course]
     else:
         subject = {'name':course}
     schema = {
-    "Status":{"select": status},
+    "Status":{"status":{"id":status} },
     'Name': {"title": [{"type":"text","text":{"content":assignment.name}}]},
     "Subject":{"select":subject},
     "Due Date":{"date":{"start":datetime.strptime(assignment.due_at,"%Y-%m-%dT%H:%M:%S%z").astimezone(pytz.timezone('US/Eastern')).strftime("%Y-%m-%dT%H:%M:%S%z")}},
@@ -40,27 +38,34 @@ def get_schema(assignment:assignment,subject_dict:dict,course:str):
     }
     return schema
 
-def add_assignment(assignment:assignment,subject_dict:dict,course:str):
+def add_assignment(assignment:assignment,course:str):
     return nclient.pages.create(**{"parent":{"type":"database_id","database_id":db_id},"properties":get_schema(assignment,subjects,course)})
 
 
-def update_course(course:cnv.course.Course,subject_dict:dict):
+def update_course(course:cnv.course.Course): 
     course_assignments = [y for y in kiran.get_assignments(course)]
     for x in course_assignments:
-        if len(nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Name","title":{"contains":x.name}}})['results'])<1 and x.get_submission(kiran).submitted_at==None and x.due_at!=None:
-            add_assignment(assignment=x,subject_dict=subject_dict,course=course.name)['properties']['Name']
+        if len(nclient.databases.query(**{"database_id":db_id,"filter":{"and":[{"property":"Name","title":{"contains":x.name}},{"property":"Subject","select":{"equals":course.name}}]}})['results'])<1 and '''x.get_submission(kiran).submitted_at==None''' and x.due_at!=None:
+            print(x)
+            add_assignment(assignment=x,course=course.name)['properties']['Name']
 
-def update_all(courses:list,subject_dict:dict):
-    backlog = {'id': '1', 'name': 'Backlog', 'color': 'red'}
-    week_backlog = {'id': '2', 'name': 'Week Backlog', 'color': 'yellow'} 
+def update_all(courses:list):
+    backlog = "Backlog"
+    week_backlog = "Week Backlog"
     backloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Backlog"}}})['results']
+    weekbackloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Week Backlog"}}})['results']
     for page in backloglist:
         date = datetime.fromisoformat(page['properties']['Due Date']['date']['start'])
         if date.date()-datetime.today().date()<=timedelta(days=7):
-            nclient.pages.update(page['id'],**{'properties':{'Status':{'status':week_backlog}}})
+            nclient.pages.update(page['id'],**{'properties':{'Status':{'status':{'name':week_backlog}}}})
+    for page in weekbackloglist:
+        if page['properties']['Due Date']['date']!=None:
+            date = datetime.fromisoformat(page['properties']['Due Date']['date']['start'])
+            if date.date()-datetime.today().date()>timedelta(days=7):
+                nclient.pages.update(page['id'],**{'properties':{'Status':{'status':{'name':backlog}}}})
     for x in courses:
-        update_course(x,subject_dict)
+        update_course(x)
 
-update_all(courses=courses,subject_dict=subjects)
+update_all(courses=courses)
 
 
