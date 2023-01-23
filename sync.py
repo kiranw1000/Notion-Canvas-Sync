@@ -52,8 +52,8 @@ def update_course(course:cnv.course.Course):
 def update_all(courses:list):
     backlog = "Backlog"
     week_backlog = "Week Backlog"
-    backloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Backlog"}}})['results']
-    weekbackloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Week Backlog"}}})['results']
+    backloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Backlog"}},"sorts":[{"property":"Due Date","direction":"ascending"}]})['results']
+    weekbackloglist = nclient.databases.query(**{"database_id":db_id,"filter":{"property":"Status","status":{"equals":"Week Backlog"}},"sorts":[{"property":"Due Date","direction":"ascending"}]})['results']
     for page in backloglist:
         date = datetime.fromisoformat(page['properties']['Due Date']['date']['start'])
         if date.date()-datetime.today().date()<=timedelta(days=7):
