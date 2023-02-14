@@ -66,6 +66,7 @@ def update_all(courses:list):
     for x in courses:
         update_course(x)
 
-update_all(courses=courses)
+if __name__ == "__main__":
+    update_all(courses=courses)
 
 
