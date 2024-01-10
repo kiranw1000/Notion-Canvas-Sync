@@ -2,3 +2,4 @@
 /__pycache__
 /sync.sh
 /tokens.py
+/*.command
