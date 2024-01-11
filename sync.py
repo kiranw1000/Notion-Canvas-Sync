@@ -38,11 +38,11 @@ def add_assignment(assignment:assignment,course:str):
     return nclient.pages.create(**{"parent":{"type":"database_id","database_id":db_id},"properties":get_schema(assignment,subjects,course)})
 
 
-def update_course(course:cnv.course.Course): 
+def update_course(course:cnv.course.Course, verbose=False): 
     course_assignments = [y for y in cnvclient.get_assignments(course)]
     for x in course_assignments:
-        if len(nclient.databases.query(**{"database_id":db_id,"filter":{"and":[{"property":"Name","title":{"contains":x.name}},{"property":"Subject","select":{"equals":course.name}}]}})['results'])<1 and '''x.get_submission(kiran).submitted_at==None''' and x.due_at!=None:
-            print(x)
+        if len(nclient.databases.query(**{"database_id":db_id,"filter":{"and":[{"property":"Name","title":{"contains":x.name}},{"property":"Subject","select":{"equals":course.name}}]}})['results'])<1 and x.due_at!=None:
+            if verbose : print(x)
             add_assignment(assignment=x,course=course.name)['properties']['Name']
 
 def update_all(courses:list):
